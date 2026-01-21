@@ -1,4 +1,4 @@
-# Progressive-Summarization--Multi-Doc-
+# 🚀 Progressive Summarization — Multi-Document
 
 > **From Single-Document to Multi-Document Abstractive Summarization**
 > Internship baseline extended into a system-level NLP project (personal extension)
@@ -47,32 +47,59 @@ This phase extends the pipeline to **multi-document and multi-source summarizati
 
 ### Dataset
 
-* **MultiNews**
+* **MultiNews** — Each sample aggregates **2–10 related news articles** describing the same event
 * **Evaluation Subset:** 1,000 validation + 1,000 test samples
-* Each sample contains **multiple related news articles** describing the same event
+* **Document Separation:** Articles within each sample are separated by `|||||` tokens
+* Preprocessing includes **splitting documents**, **removing empty lines**, and **truncating inputs** to 1024 tokens for PEGASUS
 
 ### Why PEGASUS?
 
 * Pretrained with **Gap Sentence Generation**, effective at identifying salient information
 * Strong performance on news-style summarization
-* Limited input length → requires **pipeline adaptation**
+* Limited input length → requires **hierarchical/fusion pipeline**
 
-### Pipeline Design
+---
 
-* Hierarchical / fusion-based pipeline:
+### 🛠️ Pipeline Implementation — PEGASUS
 
-  1. Individual documents summarized or compressed
-  2. Salient information fused into a compact representation
-  3. Final abstractive summary generated
+**Overview:** Hierarchical summarization — first compress individual documents, then fuse salient info into a final summary.
+
+```
+[Input Sample: Multiple Articles] 
+        │  (split by '|||||')
+        ▼
+┌─────────────────────────────┐
+│ Document-Level Summaries     │  <- Each document summarized individually (max_len=256)
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│ Fusion Step                  │  <- Concatenate document summaries
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│ Final Abstractive Summary    │  <- Summarize fused text (max_len=150)
+└─────────────────────────────┘
+```
+
+**Steps:**
+
+1. Split each multi-document sample using `|||||` separators
+2. Generate **document-level summaries** using PEGASUS
+3. Concatenate summaries into a single **fused text**
+4. Generate **final abstractive summary** from fused text
+
+This approach **mitigates truncation**, handles redundancy, and preserves salient information.
 
 ### Results (Indicative)
 
-| Metric             | Validation |  Test   |
-| :----------------- | :--------: | :----:  |
-| **ROUGE-1**        |    20.8    |  20.65  |
-| **ROUGE-2**        |    5.7     |  6.01   |
-| **ROUGE-L**        |    12.19   |  12.46  |
-| **Avg. Precision** |    44.77%  |  45.23% |
+| Metric             | Validation |  Test  |
+| :----------------- | :--------: | :----: |
+| **ROUGE-1**        |    20.8    |  20.65 |
+| **ROUGE-2**        |     5.7    |  6.01  |
+| **ROUGE-L**        |    12.19   |  12.46 |
+| **Avg. Precision** |   44.77%   | 45.23% |
 
 ---
 
@@ -80,40 +107,59 @@ This phase extends the pipeline to **multi-document and multi-source summarizati
 
 ### Dataset
 
-* **WikiSum**
+* **WikiSum** — Each sample aggregates content from **multiple documents and sources**
 * **Evaluation Subset:** 1,000 validation + 1,000 test samples
-* Each sample aggregates content from **multiple documents and sources**
+* **Document Separation:** Documents concatenated with **special separators**, global attention applied to key tokens
+* Supports ultra-long inputs (8k–16k+ tokens)
 
 ### Why LED?
 
-* Longformer-based **sparse attention**
-* Supports very long inputs (8k–16k+ tokens)
-* Designed to handle **concatenated multi-document contexts directly**
+* Longformer-based **sparse attention**, optimized for **very long concatenated contexts**
+* Can handle multi-document inputs **without hierarchical preprocessing**
 
-### Pipeline Design
+---
 
-* Documents concatenated with separators
-* Global attention applied to key tokens
-* No hierarchical preprocessing required for baseline evaluation
+### 🛠️ Pipeline Implementation — LED
+
+**Overview:** Direct long-context summarization
+
+```
+[Input Sample: Multiple Articles] 
+        │  (concatenated with separators)
+        ▼
+┌─────────────────────────────┐
+│ LED Model (Long-Context)     │  <- Sparse + global attention
+└─────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────┐
+│ Final Abstractive Summary    │
+└─────────────────────────────┘
+```
+
+**Steps:**
+
+1. Concatenate all documents with special separators
+2. Tokenize and assign **global attention** to key tokens
+3. Generate final summary directly without hierarchical fusion
 
 ### Results (Indicative)
 
-| Metric             | Validation |  Test  |
-| :----------------- | :--------: | :----: |
-| **ROUGE-1**        |    20.14   |  21.5  |
-| **ROUGE-2**        |    8.9     |  9.1   |
-| **ROUGE-L**        |    16.33   |  15.5  |
-| **Avg. Precision** |    38.94%  |  38%   |
-
+| Metric             | Validation | Test |
+| :----------------- | :--------: | :--: |
+| **ROUGE-1**        |    20.14   | 21.5 |
+| **ROUGE-2**        |     8.9    |  9.1 |
+| **ROUGE-L**        |    16.33   | 15.5 |
+| **Avg. Precision** |   38.94%   |  38% |
 
 ---
 
 ## ⚠️ Challenges
 
-* **Compute Constraints:** Free Google Colab GPUs limited batch sizes, model input lengths, and runtime duration — strategies like **chunked summaries, batch tuning, and incremental evaluation** were reused from the baseline.
-* **Pipeline Adaptation for Multi-Document Summarization:** Unlike the single-document phase, handling multiple documents required **hierarchical and fusion strategies** (for PEGASUS) and careful **input concatenation with separators** (for LED).
-
-> 💡 Overall, the **basic challenges** from the internship baseline remain, but the **multi-document handling and pipeline design** introduced the main new engineering effort.
+* **Compute Constraints:** Limited Colab GPU memory restricted batch sizes, model input lengths, and runtime duration
+* **Hierarchical Pipeline Design:** PEGASUS required document-level compression + fusion; LED required careful tokenization & global attention
+* **Data Preprocessing:** Multi-document samples needed splitting, cleaning, truncation, and concatenation strategies
+* **Evaluation & Resource Trade-offs:** Large models necessitated chunked evaluation and incremental ROUGE scoring to track progress
 
 ---
 
@@ -131,9 +177,9 @@ This phase extends the pipeline to **multi-document and multi-source summarizati
 ## 🧠 Key Learnings
 
 * Multi-document summarization is a **systems problem**
-* Hierarchical pipelines essential when context length is limited
+* Hierarchical pipelines are essential when input length is limited
 * Long-context models reduce preprocessing needs but introduce efficiency trade-offs
-* ROUGE less reliable as abstraction and document count increase
+* ROUGE becomes less reliable as abstraction and document count increase
 
 ---
 
@@ -166,3 +212,4 @@ MTech AI & Data Science
 ⭐ *Personal extension of single-document summarization to multi-document systems. If you find it useful, consider giving it a star.*
 
 ---
+
