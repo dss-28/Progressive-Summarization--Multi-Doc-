@@ -107,9 +107,6 @@ This phase extends the pipeline to **multi-document and multi-source summarizati
 | **ROUGE-L**        |    16.33   |  15.5  |
 | **Avg. Precision** |    38.94%  |  38%   |
 
----
-
-Perfect — we can add a **Challenges** section that’s concise, honest, and highlights what’s new in your personal extension. Here’s a professional way to phrase it for your **personal repo README**:
 
 ---
 
