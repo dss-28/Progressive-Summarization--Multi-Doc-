@@ -74,8 +74,6 @@ This phase extends the pipeline to **multi-document and multi-source summarizati
 | **ROUGE-L**        |    12.19   |  12.46  |
 | **Avg. Precision** |    44.77%  |  45.23% |
 
-> 📌 *Values are placeholders.*
-
 ---
 
 ## 🔹 LED — Long Multi-Document Summarization
