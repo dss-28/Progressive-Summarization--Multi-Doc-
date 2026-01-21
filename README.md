@@ -41,6 +41,13 @@ This progression reflects **real-world NLP system development**, where increasin
 
 This phase extends the pipeline to **multi-document and multi-source summarization**, where redundancy, ordering bias, and context length become dominant challenges.
 
+> ⚠️ **Scope Clarification:** 
+> This project currently focuses on **inference and pipeline design** for multi-document summarization. 
+> All reported results are generated using **pretrained PEGASUS and LED models** without any fine-tuning. 
+> Any mention of fine-tuning (e.g., LoRA/adapters) in "Future Work" refers to **planned extensions**, not implemented features.
+
+---
+
 ---
 
 ## 🔹 PEGASUS — Multi-Document News Summarization
