@@ -168,6 +168,3 @@ MTech AI & Data Science
 ⭐ *Personal extension of single-document summarization to multi-document systems. If you find it useful, consider giving it a star.*
 
 ---
-
-
-If you want, I can also **suggest GitHub repo description + topics** optimized for recruiter visibility so it gets maximum attention. Do you want me to do that?
